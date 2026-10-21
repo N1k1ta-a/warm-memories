@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>А помнишь?.. ✨</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: radial-gradient(ellipse at 20% 0%, #2a1030 0%, #140a24 45%, #0b0714 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px; overflow: hidden; position: relative;
+    min-height: 100dvh;
+    color: #e8dff0;
+  }
+
+  /* Мерцающие звёзды */
+  .star {
+    position: fixed; border-radius: 50%;
+    background: #fff; pointer-events: none; z-index: 0;
+    animation: twinkle linear infinite;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0.15; transform: scale(0.8); }
+    50% { opacity: 0.9; transform: scale(1.2); }
+  }
+
+  /* Лёгкое неоновое свечение по краям */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(circle at 85% 15%, rgba(255,80,160,0.18), transparent 40%),
+      radial-gradient(circle at 10% 85%, rgba(140,90,255,0.18), transparent 40%);
+    pointer-events: none;
+  }
+
+  .card {
+    position: relative; z-index: 2;
+    background: rgba(28,18,44,0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    padding: 28px 22px;
+    width: 100%; max-width: 500px;
+    max-height: 92dvh; overflow-y: auto;
+    text-align: center;
+    border: 1px solid rgba(255,140,200,0.28);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04) inset,
+      0 20px 60px rgba(0,0,0,0.55),
+      0 0 40px rgba(255,80,160,0.18);
+    animation: popIn .55s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @keyframes popIn { from{transform:scale(.92);opacity:0} to{transform:scale(1);opacity:1} }
+
+  .card::-webkit-scrollbar { width: 6px; }
+  .card::-webkit-scrollbar-thumb { background: rgba(255,120,190,0.4); border-radius: 10px; }
+
+  .screen { display: none; animation: fadeIn .45s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+
+  .emoji-big { font-size: 52px; display: block; margin-bottom: 10px; filter: drop-shadow(0 0 14px rgba(255,90,170,0.7)); }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+  .pulse { animation: pulse 1.9s ease-in-out infinite; }
+
+  h1 {
+    font-size: 23px; margin-bottom: 12px; line-height: 1.35;
+    background: linear-gradient(90deg, #ff8fd0, #c9a7ff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 10px rgba(255,120,200,0.35));
+  }
+  h2 {
+    font-size: 19px; margin-bottom: 14px; line-height: 1.4;
+    color: #ffb3dc; text-shadow: 0 0 12px rgba(255,110,190,0.35);
+  }
+  p.sub { color: #b9a8cc; font-size: 15px; line-height: 1.55; margin-bottom: 20px; }
+
+  .progress-wrap { height: 6px; background: rgba(255,255,255,0.08); border-radius: 10px; margin-bottom: 18px; overflow: hidden; }
+  .progress-bar {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #ff4fa3, #a06bff);
+    border-radius: 10px; transition: width .45s ease;
+    box-shadow: 0 0 12px rgba(255,90,170,0.8);
+  }
+  .counter { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: #8f7aa8; margin-bottom: 8px; }
+
+  .memory-text {
+    font-size: 15px; line-height: 1.75; color: #ddd3ea;
+    text-align: left; margin-bottom: 16px;
+  }
+  .memory-text p { margin-bottom: 12px; }
+  .memory-text .hl { color: #ff8fd0; font-weight: 700; }
+
+  .after-msg {
+    background: linear-gradient(135deg, rgba(255,80,160,0.12), rgba(140,90,255,0.12));
+    border-left: 3px solid #ff6bb8;
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 14.5px; line-height: 1.65;
+    color: #e9dff5; text-align: left;
+    margin-bottom: 18px;
+    box-shadow: 0 0 24px rgba(255,90,170,0.15), 0 0 0 1px rgba(255,140,200,0.12) inset;
+    animation: fadeIn .6s ease .2s both;
+  }
+  .after-msg b { color: #ffb3dc; }
+
+  .main-btn {
+    font-family: inherit; font-size: 16px; font-weight: 600;
+    padding: 14px 32px; border-radius: 50px; border: none;
+    background: linear-gradient(135deg, #ff4fa3, #8a5bff);
+    color: #fff; cursor: pointer; margin-top: 4px;
+    box-shadow: 0 8px 26px rgba(180,60,200,0.45), 0 0 18px rgba(255,90,170,0.4);
+    transition: transform .15s, box-shadow .2s; width: 100%; max-width: 300px;
+  }
+  .main-btn:active { transform: scale(.96); box-shadow: 0 4px 14px rgba(180,60,200,0.5); }
+
+  .love-text { font-size: 15.5px; line-height: 1.8; color: #ddd3ea; text-align: left; margin-bottom: 8px; }
+  .love-text p { margin-bottom: 14px; }
+  .love-text .hl { color: #ff8fd0; font-weight: 700; text-shadow: 0 0 10px rgba(255,110,190,0.35); }
+  .signature { font-size: 16px; font-style: italic; color: #c9a7ff; text-align: right; margin-top: 8px; }
+  .hearts-row { font-size: 24px; letter-spacing: 5px; margin-top: 16px; filter: drop-shadow(0 0 12px rgba(255,90,170,0.7)); }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- СТАРТ -->
+  <div class="screen active" id="screen-start">
+    <span class="emoji-big pulse">💌</span>
+    <h1>А помнишь?..</h1>
+    <p class="sub">Я собрал для тебя наши моменты.<br>Пройди со мной этот маленький путь — до самого конца 💕</p>
+    <button class="main-btn" id="startBtn">Начать 💗</button>
+  </div>
+
+  <!-- СЛАЙД -->
+  <div class="screen" id="screen-memory">
+    <div class="counter" id="counter"></div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <h2 id="memoryTitle"></h2>
+    <div class="memory-text" id="memoryText"></div>
+    <div class="after-msg" id="afterMsg"></div>
+    <button class="main-btn" id="nextBtn">Дальше →</button>
+  </div>
+
+  <!-- ФИНАЛ -->
+  <div class="screen" id="screen-final">
+    <span class="emoji-big pulse">❤️</span>
+    <h1>И знаешь что?..</h1>
+    <div class="love-text">
+      <p>Я всё это решил напомнить не просто так. Я хотел показать тебе: <span class="hl">как бы трудно ни было — мы сможем пройти всё и решить.</span> Да, не сразу. Да, иногда с соррами и недопониманиями. Но мы справимся — <span class="hl">мы сильные, когда мы вместе.</span></p>
+
+      <p>И то, что я вспомнил здесь — это <span class="hl">лишь малая часть всех наших воспоминаний</span>. Их у нас бесчисленное количество — и больших, и совсем маленьких, которые живут где-то глубоко и всплывают в самый неожиданный момент. Каждое из них я берегу. И каждое из них — про тебя.</p>
+
+      <p>Да, я знаю — я бываю <span class="hl">упрямым, наглым и противным</span>. Иногда слишком. Но именно таким ты и полюбила меня. И я не хочу притворяться кем-то другим — я хочу быть собой рядом с тобой. Со всеми своими недостатками. Потому что ты любишь меня настоящего.</p>
+
+      <p>Прости меня, пожалуйста. Если я чем-то тебя задел, если из-за меня ты закрылась и стала холодной — мне правда очень жаль. Я не хочу, чтобы ты была «букой». Я хочу видеть твою улыбку, слышать твой смех и просто быть рядом. И я <span class="hl">безумно скучаю</span> по тебе и по каждому из наших моментов.</p>
+
+      <p>Я <span class="hl">очень сильно тебя люблю</span> — больше, чем могу сказать словами. Ты — самое тёплое, что у меня есть. Пожалуйста, улыбнись. Хотя бы чуть-чуть. Ради меня 💗</p>
+      <p class="signature">Твой, весь твой... навсегда</p>
+    </div>
+    <div class="hearts-row pulse">💖 💗 💞 💘 💝</div>
+  </div>
+
+</div>
+
+<script>
+/* ====== ЗВЁЗДЫ НА ФОНЕ ====== */
+const starCount = 60;
+for (let i = 0; i < starCount; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = 1 + Math.random() * 2.5;
+  s.style.width = size + 'px';
+  s.style.height = size + 'px';
+  s.style.left = Math.random() * 100 + 'vw';
+  s.style.top = Math.random() * 100 + 'vh';
+  const dur = 2 + Math.random() * 4;
+  s.style.animationDuration = dur + 's';
+  s.style.animationDelay = (Math.random() * dur) + 's';
+  document.body.appendChild(s);
+}
+
+/* ====== ТВОИ ВОСПОМИНАНИЯ ====== */
+const memories = [
+  {
+    title: "А помнишь наше знакомство?",
+    text: `<p>Помнишь, каким я тогда был неуверенным в себе? Как боялся открыться тебе, как мне было тяжело сказать «люблю» и «скучаю»? Я долго не решался, всё держал в себе...</p>
+           <p>А сейчас я говорю это без страха — тебе и только тебе.</p>`,
+    after: `<b>Я так благодарен, что тогда всё-таки решился.</b> Ты — та, ради которой стоило перестать бояться. И я не жалею ни об одной секунде.`
+  },
+  {
+    title: "А помнишь нашу первую встречу?",
+    text: `<p>Помнишь тот день, когда я приехал? Как я прошёл мимо, не зная, как ты выглядишь — а ты узнала меня сразу. И что ты почувствовала в тот момент?</p>
+           <p>А потом мы вместе поехали в тот самый парк который мы посетили вместе и куда возвращаемся всегда, на ВДНХ как арендовали ту самую карету — пхпхпхпх 😄 И как мы не хотели прощаться...</p>`,
+    after: `<b>Тот день — один из самых тёплых в моей памяти.</b> Я до сих пор улыбаюсь, когда вспоминаю ту карету и то, как не хотелось отпускать твою руку.`
+  },
+  {
+    title: "А помнишь, как я сорвался в Калугу?",
+    text: `<p>Помнишь, как мы спонтанно решили — и я приехал к тебе в Калугу, когда был нужен, когда тебе было плохо? Я очень рад, что тогда приехал и провёл тот день вместе с тобой.</p>
+           <p>Как мы встретили твоих родителей, и они были рады видеть тебя счастливую. Как я перевернулся — ппхпхпхп 😅 И как мы не хотели тогда прощаться...</p>`,
+    after: `<b>Я бы приехал снова. И ещё раз. И столько, сколько нужно.</b> Потому что когда тебе плохо — я хочу быть рядом. Это не подвиг, это просто любовь.`
+  },
+  {
+    title: "А помнишь, как ты приезжала ко мне?",
+    text: `<p>Помнишь, как ты приехала ко мне в первый и во второй раз? Как мы впервые готовили вместе, как спали вместе, смеялись и крутили Флинса. Как я показывал тебе город и радовался тому напитку, который ты мне купила — затащив силой, потому что я не хотел покупать себе сам 😄</p>`,
+    after: `<b>Эти мелочи — мои самые любимые.</b> Ты заботилась обо мне так, как никто. И я это помню. И ценю. И скучаю по этому безумно.`
+  },
+  {
+    title: "А помнишь наши сорры?",
+    text: `<p>Помнишь наши небольшие сорры и недопонимания? Как мы решали всё это вместе — и проходили через это?</p>
+           <p>Мы не идеальные. Но мы всегда находили путь друг к другу.</p>`,
+    after: `<b>И это главное — мы проходили всё вместе.</b> Не сразу, иногда с болью, но мы справлялись. И сейчас справимся. Потому что мы сильные — вдвоём.`
+  },
+  {
+    title: "А помнишь нашу последнюю встречу?",
+    text: `<p>Помнишь, как я сорвался и приехал сразу, когда тебе было плохо? Но не только потому, что хотел помочь и быть рядом.</p>
+           <p>А ещё и потому, что хотел тебя услышать, обнять, поцеловать. Услышать тебя. Потому что я очень сильно скучал.</p>`,
+    after: `<b>И я всё ещё скучаю. Очень.</b> По твоему голосу, по твоим объятиям, по тебе. И я хочу, чтобы ты знала: я рядом. Всегда.`
+  }
+];
+
+/* ====== ЛОГИКА ====== */
+let current = 0;
+const counterEl = document.getElementById('counter');
+const progressEl = document.getElementById('progressBar');
+const titleEl = document.getElementById('memoryTitle');
+const textEl = document.getElementById('memoryText');
+const afterEl = document.getElementById('afterMsg');
+const nextBtn = document.getElementById('nextBtn');
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showMemory() {
+  const item = memories[current];
+  counterEl.textContent = `Воспоминание ${current+1} из ${memories.length}`;
+  progressEl.style.width = `${(current / memories.length) * 100}%`;
+  titleEl.textContent = item.title;
+  textEl.innerHTML = item.text;
+  afterEl.innerHTML = item.after;
+  afterEl.style.animation = 'none';
+  void afterEl.offsetWidth;
+  afterEl.style.animation = '';
+  nextBtn.textContent = current === memories.length - 1 ? 'Показать главное 💌' : 'Дальше →';
+  showScreen('screen-memory');
+}
+
+nextBtn.addEventListener('click', () => {
+  current++;
+  if (current < memories.length) {
+    showMemory();
+  } else {
+    progressEl.style.width = '100%';
+    showScreen('screen-final');
+  }
+});
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  current = 0;
+  showMemory();
+});
+</script>
+</body>
+</html>
